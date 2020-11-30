@@ -76,24 +76,28 @@ class Departures extends StatelessWidget {
                 'Time',
                 style: Theme.of(context).textTheme.bodyText2,
               ),
+              flex: 1,
             ),
             Expanded(
               child: Text(
                 'Destination',
                 style: Theme.of(context).textTheme.bodyText2,
               ),
+              flex: 3,
             ),
             Expanded(
               child: Text(
                 'Time',
                 style: Theme.of(context).textTheme.bodyText2,
               ),
+              flex: 1,
             ),
             Expanded(
               child: Text(
                 'Time',
                 style: Theme.of(context).textTheme.bodyText2,
               ),
+              flex: 1,
             ),
           ],
         ),
