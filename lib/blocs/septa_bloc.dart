@@ -1,52 +1,49 @@
 import 'package:bloc_departure/models/train.dart';
+import 'package:bloc_departure/services/septa_service.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert' as convert;
 
 class SeptaBloc {
   // Define StreamController/ Subject.
   final _trains = BehaviorSubject<List<Train>>();
+  final _station = BehaviorSubject<String>();
+  final _count = BehaviorSubject<int>();
+  final _directions = BehaviorSubject<List<String>>();
+  final _septaService = SeptaService();
 
   SeptaBloc() {
-    loadStationData('Suburban Station');
+    loadSettings();
+    // loadStationData('Suburban Station');
+
+    // Listeners
+    station.listen((station) async {
+      changeTrain(await _septaService.loadStationData(station));
+    });
   }
 
   // Getters
   Stream<List<Train>> get trains => _trains.stream;
+  Stream<int> get count => _count.stream;
+  Stream<String> get station => _station.stream;
+  Stream<List<String>> get directions => _directions.stream;
 
   // Setters
   Function(List<Train>) get changeTrain => _trains.sink.add;
+  Function(int) get changeCount => _count.sink.add;
+  Function(String) get changeStation => _station.sink.add;
+  Function(List<String>) get changeDirection => _directions.sink.add;
 
   // Dispose
   void dispose() {
     _trains.close();
+    _count.close();
+    _station.close();
+    _directions.close();
   }
 
-  void loadStationData(String station) async {
-    // Send the get request
-    http.Response response =
-        await http.get("http://www3.septa.org/hackathon/Arrivals/$station/20/");
-
-    // Replace Dynamic key and Decode it.
-    var decodedJson = convert.jsonDecode('{ "Departures" : ' +
-        response.body.substring(response.body.indexOf('[')));
-
-    // Build Train List
-    var trains = List<Train>();
-
-    try {
-      var north = decodedJson['Departures'][0]['Northbound'];
-      var south = decodedJson['Departures'][1]['Southbound'];
-      north.forEach((train) => trains.add(Train.fromJson(train)));
-      south.forEach((train) => trains.add(Train.fromJson(train)));
-    } catch (error) {
-      print(error);
-    }
-
-    // Sort
-    trains.sort((a, b) => a.departTime.compareTo(b.departTime));
-
-    // Update Stream
-    changeTrain(trains);
+  // Load settings from user's device
+  void loadSettings() {
+    changeCount(10);
+    changeDirection(['N', 'S']);
+    changeStation('Suburban Station');
   }
 }

@@ -1,6 +1,9 @@
+import 'dart:ui';
+
 import 'package:bloc_departure/providers/septa_provider.dart';
 import 'package:bloc_departure/screens/departures.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -13,11 +16,22 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (BuildContext context) => SeptaProvider(),
       child: MaterialApp(
-        title: 'Flutter Demo',
+        title: 'Train Time-Table',
         theme: ThemeData(
           accentColor: Colors.deepOrangeAccent,
-          primarySwatch: Colors.blue,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
+          brightness: Brightness.dark,
+          textTheme: TextTheme(
+            bodyText2: GoogleFonts.orbitron(
+                textStyle: TextStyle(
+              color: Colors.cyan,
+              fontSize: 18.0,
+            )),
+            bodyText1: GoogleFonts.openSans(
+                textStyle:
+                    TextStyle(color: Colors.deepOrangeAccent, fontSize: 12.0)),
+            headline6: GoogleFonts.orbitron(
+                textStyle: TextStyle(color: Colors.cyan, fontSize: 25.0)),
+          ),
         ),
         home: Departures(),
       ),

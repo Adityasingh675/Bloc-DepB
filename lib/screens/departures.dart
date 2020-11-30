@@ -2,6 +2,8 @@ import 'dart:ui';
 
 import 'package:bloc_departure/models/train.dart';
 import 'package:bloc_departure/providers/septa_provider.dart';
+import 'package:bloc_departure/screens/settings.dart';
+import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -11,7 +13,13 @@ class Departures extends StatelessWidget {
     final bloc = Provider.of<SeptaProvider>(context).bloc;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Station'),
+        title: StreamBuilder<String>(
+            stream: bloc.station,
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) return Container();
+              return Text(snapshot.data,
+                  style: Theme.of(context).textTheme.headline6);
+            }),
         actions: [
           FlatButton(
             child: Text(
@@ -19,7 +27,8 @@ class Departures extends StatelessWidget {
               style: TextStyle(color: Theme.of(context).accentColor),
             ),
             onPressed: () {
-              // TODO To Settings
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (context) => Settings()));
             },
           )
         ],
@@ -37,7 +46,7 @@ class Departures extends StatelessWidget {
                 if (index == 0) {
                   return _buildHeader(context);
                 } else {
-                  return Container();
+                  return _buildDeparture(context, snapshot.data[index - 1]);
                 }
               },
             );
@@ -64,7 +73,7 @@ class Departures extends StatelessWidget {
           ],
         ),
         SizedBox(
-          height: 10.0,
+          height: 20.0,
         ),
         Row(
           children: [
@@ -74,33 +83,76 @@ class Departures extends StatelessWidget {
             Expanded(
               child: Text(
                 'Time',
-                style: Theme.of(context).textTheme.bodyText2,
+                style: Theme.of(context).textTheme.bodyText1,
               ),
               flex: 1,
             ),
             Expanded(
               child: Text(
                 'Destination',
+                style: Theme.of(context).textTheme.bodyText1,
+              ),
+              flex: 3,
+            ),
+            Expanded(
+              child: Text(
+                'Track',
+                style: Theme.of(context).textTheme.bodyText1,
+              ),
+              flex: 1,
+            ),
+            Expanded(
+              child: Text(
+                'Status',
+                style: Theme.of(context).textTheme.bodyText1,
+              ),
+              flex: 1,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  _buildDeparture(BuildContext context, Train train) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            SizedBox(
+              width: 15.0,
+            ),
+            Expanded(
+              child: Text(
+                formatDate(train.departTime, [hh, ':', nn]),
+                style: Theme.of(context).textTheme.bodyText2,
+              ),
+              flex: 1,
+            ),
+            Expanded(
+              child: Text(
+                train.destination,
                 style: Theme.of(context).textTheme.bodyText2,
               ),
               flex: 3,
             ),
             Expanded(
               child: Text(
-                'Time',
+                train.track,
                 style: Theme.of(context).textTheme.bodyText2,
               ),
               flex: 1,
             ),
             Expanded(
               child: Text(
-                'Time',
+                train.status,
                 style: Theme.of(context).textTheme.bodyText2,
               ),
               flex: 1,
             ),
           ],
         ),
+        Divider(),
       ],
     );
   }
