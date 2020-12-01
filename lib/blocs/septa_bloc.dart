@@ -14,14 +14,17 @@ class SeptaBloc {
     loadSettings();
     // loadStationData('Suburban Station');
 
-    // Listeners
+    // Listeners to get info from the API using RxDart.
     station.listen((station) async {
       changeTrain(await _septaService.loadStationData(station));
     });
   }
 
   // Getters
-  Stream<List<Train>> get trains => _trains.stream;
+  Stream<List<Train>> get trains => _trains.stream.map((trainList) => trainList
+      .where((train) => _directions.value.contains(train.direction))
+      .take(_count.value)
+      .toList());
   Stream<int> get count => _count.stream;
   Stream<String> get station => _station.stream;
   Stream<List<String>> get directions => _directions.stream;

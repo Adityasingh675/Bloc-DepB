@@ -8,14 +8,13 @@ class SeptaService {
     http.Response response =
         await http.get("http://www3.septa.org/hackathon/Arrivals/$station/20/");
 
-    // Replace Dynamic key and Decode it.
-    var decodedJson = convert.jsonDecode('{ "Departures" : ' +
-        response.body.substring(response.body.indexOf('[')));
-
     // Build Train List
     var trains = List<Train>();
 
     try {
+      // Replace Dynamic key and Decode it.
+      var decodedJson = convert.jsonDecode('{ "Departures" : ' +
+          response.body.substring(response.body.indexOf('[')));
       var north = decodedJson['Departures'][0]['Northbound'];
       var south = decodedJson['Departures'][1]['Southbound'];
       north.forEach((train) => trains.add(Train.fromJson(train)));

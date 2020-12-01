@@ -17,8 +17,10 @@ class Departures extends StatelessWidget {
             stream: bloc.station,
             builder: (context, snapshot) {
               if (!snapshot.hasData) return Container();
-              return Text(snapshot.data,
-                  style: Theme.of(context).textTheme.headline6);
+              return Text(
+                snapshot.data,
+                style: Theme.of(context).textTheme.headline6,
+              );
             }),
         actions: [
           FlatButton(

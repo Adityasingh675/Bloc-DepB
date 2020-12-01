@@ -8,5 +8,6 @@ class SeptaProvider with ChangeNotifier {
     _bloc = SeptaBloc();
   }
 
+  // Getter
   SeptaBloc get bloc => _bloc;
 }
