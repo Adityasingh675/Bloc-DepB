@@ -23,28 +23,32 @@ class Settings extends StatelessWidget {
                 if (!snapshot.hasData) Container();
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Station'),
-                      DropdownButton<String>(
-                        value: snapshot.data,
-                        onChanged: (String value) {
-                          bloc.changeStation(value);
-                        },
-                        items: <String>[
-                          'Media',
-                          'Bala',
-                          'Suburban Station',
-                          '30th Street Station',
-                        ]
-                            .map<DropdownMenuItem<String>>((String value) =>
-                                DropdownMenuItem<String>(
-                                    value: value, child: Text(value)))
-                            .toList(),
-                      ),
-                    ],
-                  ),
+                  child: StreamBuilder<List<String>>(
+                      stream: bloc.stations,
+                      builder: (context, snapshotStations) {
+                        if (!snapshotStations.hasData)
+                          return Row(
+                            children: [],
+                          );
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Station'),
+                            DropdownButton<String>(
+                              value: snapshot.data,
+                              onChanged: (String value) {
+                                bloc.changeStation(value);
+                              },
+                              items: snapshotStations.data
+                                  .map<DropdownMenuItem<String>>(
+                                      (String value) =>
+                                          DropdownMenuItem<String>(
+                                              value: value, child: Text(value)))
+                                  .toList(),
+                            ),
+                          ],
+                        );
+                      }),
                 );
               }),
           Padding(

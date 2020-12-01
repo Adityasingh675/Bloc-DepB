@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bloc_departure/models/train.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
@@ -27,5 +29,24 @@ class SeptaService {
     trains.sort((a, b) => a.departTime.compareTo(b.departTime));
 
     return trains;
+  }
+
+  // Method used inside is used to get the contents of the file.
+  Future<List<String>> getStations() async {
+    var output = List<String>();
+    var request = await HttpClient().getUrl(Uri.parse(
+        'http://www3.septa.org/hackathon/Arrivals/station_id_name.csv'));
+    var response = await request.close();
+
+    // Split the contents of the file using line break.
+    await response.transform(convert.Utf8Decoder()).listen((fileContents) {
+      convert.LineSplitter ls = convert.LineSplitter();
+      List<String> lines = ls.convert(fileContents);
+      lines.forEach((line) {
+        output.add(line.split(',')[1]);
+      });
+    }).asFuture();
+
+    return output;
   }
 }
